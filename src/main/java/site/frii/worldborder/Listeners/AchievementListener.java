@@ -39,7 +39,7 @@ public class AchievementListener implements Listener {
         double increaseAmount = instance.getConfig().getDouble("amount");
 
         if(increaseAmount == 0.0) {
-            Bukkit.broadcastMessage("Please specify amount with /amount. Defaulting to 1");
+            Bukkit.broadcastMessage("Please specify how many blocks an advancement expands the world border with §l/amount§r. Defaulting to 1...");
             increaseAmount = 1.0;
         }
 
@@ -52,8 +52,13 @@ public class AchievementListener implements Listener {
             world.getWorldBorder().setSize(newSize*increaseAmount);
             for (Player player : Bukkit.getOnlinePlayers())
             {
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BANJO, 1.0f, 1.0f);
-                player.sendMessage(String.format("World border's size is now %s",newSize*increaseAmount));
+                if(instance.getConfig().getBoolean("settings.sound")) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BANJO, 1.0f, 1.0f);
+                }
+
+                String message;
+                message = instance.getConfig().getString("settings.message").replace("{SIZE}",""+newSize*increaseAmount);
+                player.sendMessage(message);
             }
         } catch (NullPointerException npe) {
             Bukkit.broadcastMessage("Failed to set world border. Reason: NullPointerException. new size: " + newSize);
